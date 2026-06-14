@@ -1,0 +1,2250 @@
+<!doctype html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet" />
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <title>LinkRouter Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              stone: {
+                400: "#a8a29e",
+                500: "#78716c",
+                600: "#57534e",
+                800: "#292524",
+                900: "#1c1917",
+              },
+              pink: {
+                50: "#fdf2f8",
+                100: "#fce7f3",
+                200: "#fbcfe8",
+                300: "#f9a8d4",
+                400: "#f472b6",
+                500: "#ec4899",
+                600: "#db2777",
+                800: "#9d174d",
+                900: "#831843",
+                950: "#500724",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      @keyframes fadein {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      .animate-fadein {
+        animation: fadein 0.3s ease forwards;
+      }
+
+      @media (max-width: 640px) {
+        body:has(input:focus) nav:last-of-type {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="h-[100dvh] pt-safe pb-safe bg-pink-50 text-stone-900 flex flex-col overflow-hidden selection:bg-pink-500/30"
+  >
+    <!-- App Container -->
+    <div id="app" class="h-full w-full flex flex-col">
+      <!-- Views Render Here dynamically -->
+    </div>
+
+    <script>
+      const SUPABASE_URL = "https://tibnmcjnuzkibkoaluwl.supabase.co";
+      const SUPABASE_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpYm5tY2pudXpraWJrb2FsdXdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDMyNzIsImV4cCI6MjA5MzI3OTI3Mn0.eRNIedq5wO3LcHnvCW7fFrqkVj07MxZ5oW-cERkmFXM";
+      const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY,
+      );
+
+      const ALL_COUNTRIES = [
+        { name: "Afghanistan", flag: "🇦🇫" },
+        { name: "Albania", flag: "🇦🇱" },
+        { name: "Algeria", flag: "🇩🇿" },
+        { name: "Andorra", flag: "🇦🇩" },
+        { name: "Angola", flag: "🇦🇴" },
+        { name: "Antigua and Barbuda", flag: "🇦🇬" },
+        { name: "Argentina", flag: "🇦🇷" },
+        { name: "Armenia", flag: "🇦🇲" },
+        { name: "Australia", flag: "🇦🇺" },
+        { name: "Austria", flag: "🇦🇹" },
+        { name: "Azerbaijan", flag: "🇦🇿" },
+        { name: "Bahamas", flag: "🇧🇸" },
+        { name: "Bahrain", flag: "🇧🇭" },
+        { name: "Bangladesh", flag: "🇧🇩" },
+        { name: "Barbados", flag: "🇧🇧" },
+        { name: "Belarus", flag: "🇧🇾" },
+        { name: "Belgium", flag: "🇧🇪" },
+        { name: "Belize", flag: "🇧🇿" },
+        { name: "Benin", flag: "🇧🇯" },
+        { name: "Bhutan", flag: "🇧🇹" },
+        { name: "Bolivia", flag: "🇧🇴" },
+        { name: "Bosnia and Herzegovina", flag: "🇧🇦" },
+        { name: "Botswana", flag: "🇧🇼" },
+        { name: "Brazil", flag: "🇧🇷" },
+        { name: "Brunei", flag: "🇧🇳" },
+        { name: "Bulgaria", flag: "🇧🇬" },
+        { name: "Burkina Faso", flag: "🇧🇫" },
+        { name: "Burundi", flag: "🇧🇮" },
+        { name: "Cabo Verde", flag: "🇨🇻" },
+        { name: "Cambodia", flag: "🇰🇭" },
+        { name: "Cameroon", flag: "🇨🇲" },
+        { name: "Canada", flag: "🇨🇦" },
+        { name: "Central African Republic", flag: "🇨🇫" },
+        { name: "Chad", flag: "🇹🇩" },
+        { name: "Chile", flag: "🇨🇱" },
+        { name: "China", flag: "🇨🇳" },
+        { name: "Colombia", flag: "🇨🇴" },
+        { name: "Comoros", flag: "🇰🇲" },
+        { name: "Congo", flag: "🇨🇬" },
+        { name: "Costa Rica", flag: "🇨🇷" },
+        { name: "Croatia", flag: "🇭🇷" },
+        { name: "Cuba", flag: "🇨🇺" },
+        { name: "Cyprus", flag: "🇨🇾" },
+        { name: "Czech Republic", flag: "🇨🇿" },
+        { name: "Denmark", flag: "🇩🇰" },
+        { name: "Djibouti", flag: "🇩🇯" },
+        { name: "Dominica", flag: "🇩🇲" },
+        { name: "Dominican Republic", flag: "🇩🇴" },
+        { name: "Ecuador", flag: "🇪🇨" },
+        { name: "Egypt", flag: "🇪🇬" },
+        { name: "El Salvador", flag: "🇸🇻" },
+        { name: "Equatorial Guinea", flag: "🇬🇶" },
+        { name: "Eritrea", flag: "🇪🇷" },
+        { name: "Estonia", flag: "🇪🇪" },
+        { name: "Eswatini", flag: "🇸🇿" },
+        { name: "Ethiopia", flag: "🇪🇹" },
+        { name: "Fiji", flag: "🇫🇯" },
+        { name: "Finland", flag: "🇫🇮" },
+        { name: "France", flag: "🇫🇷" },
+        { name: "Gabon", flag: "🇬🇦" },
+        { name: "Gambia", flag: "🇬🇲" },
+        { name: "Georgia", flag: "🇬🇪" },
+        { name: "Germany", flag: "🇩🇪" },
+        { name: "Ghana", flag: "🇬🇭" },
+        { name: "Greece", flag: "🇬🇷" },
+        { name: "Grenada", flag: "🇬🇩" },
+        { name: "Guatemala", flag: "🇬🇹" },
+        { name: "Guinea", flag: "🇬🇳" },
+        { name: "Guinea-Bissau", flag: "🇬🇼" },
+        { name: "Guyana", flag: "🇬🇾" },
+        { name: "Haiti", flag: "🇭🇹" },
+        { name: "Honduras", flag: "🇭🇳" },
+        { name: "Hungary", flag: "🇭🇺" },
+        { name: "Iceland", flag: "🇮🇸" },
+        { name: "India", flag: "🇮🇳" },
+        { name: "Indonesia", flag: "🇮🇩" },
+        { name: "Iran", flag: "🇮🇷" },
+        { name: "Iraq", flag: "🇮🇶" },
+        { name: "Ireland", flag: "🇮🇪" },
+        { name: "Israel", flag: "🇮🇱" },
+        { name: "Italy", flag: "🇮🇹" },
+        { name: "Jamaica", flag: "🇯🇲" },
+        { name: "Japan", flag: "🇯🇵" },
+        { name: "Jordan", flag: "🇯🇴" },
+        { name: "Kazakhstan", flag: "🇰🇿" },
+        { name: "Kenya", flag: "🇰🇪" },
+        { name: "Kiribati", flag: "🇰🇮" },
+        { name: "Kuwait", flag: "🇰🇼" },
+        { name: "Kyrgyzstan", flag: "🇰🇬" },
+        { name: "Laos", flag: "🇱🇦" },
+        { name: "Latvia", flag: "🇱🇻" },
+        { name: "Lebanon", flag: "🇱🇧" },
+        { name: "Lesotho", flag: "🇱🇸" },
+        { name: "Liberia", flag: "🇱🇷" },
+        { name: "Libya", flag: "🇱🇾" },
+        { name: "Liechtenstein", flag: "🇱🇮" },
+        { name: "Lithuania", flag: "🇱🇹" },
+        { name: "Luxembourg", flag: "🇱🇺" },
+        { name: "Madagascar", flag: "🇲🇬" },
+        { name: "Malawi", flag: "🇲🇼" },
+        { name: "Malaysia", flag: "🇲🇾" },
+        { name: "Maldives", flag: "🇲🇻" },
+        { name: "Mali", flag: "🇲🇱" },
+        { name: "Malta", flag: "🇲🇹" },
+        { name: "Marshall Islands", flag: "🇲🇭" },
+        { name: "Mauritania", flag: "🇲🇷" },
+        { name: "Mauritius", flag: "🇲🇺" },
+        { name: "Mexico", flag: "🇲🇽" },
+        { name: "Micronesia", flag: "🇫🇲" },
+        { name: "Moldova", flag: "🇲🇩" },
+        { name: "Monaco", flag: "🇲🇨" },
+        { name: "Mongolia", flag: "🇲🇳" },
+        { name: "Montenegro", flag: "🇲🇪" },
+        { name: "Morocco", flag: "🇲🇦" },
+        { name: "Mozambique", flag: "🇲🇿" },
+        { name: "Myanmar", flag: "🇲🇲" },
+        { name: "Namibia", flag: "🇳🇦" },
+        { name: "Nauru", flag: "🇳🇷" },
+        { name: "Nepal", flag: "🇳🇵" },
+        { name: "Netherlands", flag: "🇳🇱" },
+        { name: "New Zealand", flag: "🇳🇿" },
+        { name: "Nicaragua", flag: "🇳🇮" },
+        { name: "Niger", flag: "🇳🇪" },
+        { name: "Nigeria", flag: "🇳🇬" },
+        { name: "North Korea", flag: "🇰🇵" },
+        { name: "North Macedonia", flag: "🇲🇰" },
+        { name: "Norway", flag: "🇳🇴" },
+        { name: "Oman", flag: "🇴🇲" },
+        { name: "Pakistan", flag: "🇵🇰" },
+        { name: "Palau", flag: "🇵🇼" },
+        { name: "Palestine", flag: "🇵🇸" },
+        { name: "Panama", flag: "🇵🇦" },
+        { name: "Papua New Guinea", flag: "🇵🇬" },
+        { name: "Paraguay", flag: "🇵🇾" },
+        { name: "Peru", flag: "🇵🇪" },
+        { name: "Philippines", flag: "🇵🇭" },
+        { name: "Poland", flag: "🇵🇱" },
+        { name: "Portugal", flag: "🇵🇹" },
+        { name: "Qatar", flag: "🇶🇦" },
+        { name: "Romania", flag: "🇷🇴" },
+        { name: "Russia", flag: "🇷🇺" },
+        { name: "Rwanda", flag: "🇷🇼" },
+        { name: "Saint Kitts and Nevis", flag: "🇰🇳" },
+        { name: "Saint Lucia", flag: "🇱🇨" },
+        { name: "Saint Vincent and the Grenadines", flag: "🇻🇨" },
+        { name: "Samoa", flag: "🇼🇸" },
+        { name: "San Marino", flag: "🇸🇲" },
+        { name: "Sao Tome and Principe", flag: "🇸🇹" },
+        { name: "Saudi Arabia", flag: "🇸🇦" },
+        { name: "Senegal", flag: "🇸🇳" },
+        { name: "Serbia", flag: "🇷🇸" },
+        { name: "Seychelles", flag: "🇸🇨" },
+        { name: "Sierra Leone", flag: "🇸🇱" },
+        { name: "Singapore", flag: "🇸🇬" },
+        { name: "Slovakia", flag: "🇸🇰" },
+        { name: "Slovenia", flag: "🇸🇮" },
+        { name: "Solomon Islands", flag: "🇸🇧" },
+        { name: "Somalia", flag: "🇸🇴" },
+        { name: "South Africa", flag: "🇿🇦" },
+        { name: "South Korea", flag: "🇰🇷" },
+        { name: "South Sudan", flag: "🇸🇸" },
+        { name: "Spain", flag: "🇪🇸" },
+        { name: "Sri Lanka", flag: "🇱🇰" },
+        { name: "Sudan", flag: "🇸🇩" },
+        { name: "Suriname", flag: "🇸🇷" },
+        { name: "Sweden", flag: "🇸🇪" },
+        { name: "Switzerland", flag: "🇨🇭" },
+        { name: "Syria", flag: "🇸🇾" },
+        { name: "Taiwan", flag: "🇹🇼" },
+        { name: "Tajikistan", flag: "🇹🇯" },
+        { name: "Tanzania", flag: "🇹🇿" },
+        { name: "Thailand", flag: "🇹🇭" },
+        { name: "Timor-Leste", flag: "🇹🇱" },
+        { name: "Togo", flag: "🇹🇬" },
+        { name: "Tonga", flag: "🇹🇴" },
+        { name: "Trinidad and Tobago", flag: "🇹🇹" },
+        { name: "Tunisia", flag: "🇹🇳" },
+        { name: "Turkey", flag: "🇹🇷" },
+        { name: "Turkmenistan", flag: "🇹🇲" },
+        { name: "Tuvalu", flag: "🇹🇻" },
+        { name: "Uganda", flag: "🇺🇬" },
+        { name: "Ukraine", flag: "🇺🇦" },
+        { name: "United Arab Emirates", flag: "🇦🇪" },
+        { name: "United Kingdom", flag: "🇬🇧" },
+        { name: "United States", flag: "🇺🇸" },
+        { name: "Uruguay", flag: "🇺🇾" },
+        { name: "Uzbekistan", flag: "🇺🇿" },
+        { name: "Vanuatu", flag: "🇻🇺" },
+        { name: "Vatican City", flag: "🇻🇦" },
+        { name: "Venezuela", flag: "🇻🇪" },
+        { name: "Vietnam", flag: "🇻🇳" },
+        { name: "Yemen", flag: "🇾🇪" },
+        { name: "Zambia", flag: "🇿🇲" },
+        { name: "Zimbabwe", flag: "🇿🇼" },
+      ];
+
+      function getFlag(countryName) {
+        const c = ALL_COUNTRIES.find((x) => x.name === countryName);
+        return c ? c.flag : "🌐";
+      }
+
+      const ALL_IPHONES = [
+        "iPhone 2G",
+        "iPhone 3G",
+        "iPhone 3GS",
+        "iPhone 4",
+        "iPhone 4s",
+        "iPhone 5",
+        "iPhone 5c",
+        "iPhone 5s",
+        "iPhone 6",
+        "iPhone 6 Plus",
+        "iPhone 6s",
+        "iPhone 6s Plus",
+        "iPhone SE (1st Gen)",
+        "iPhone 7",
+        "iPhone 7 Plus",
+        "iPhone 8",
+        "iPhone 8 Plus",
+        "iPhone X",
+        "iPhone XR",
+        "iPhone XS",
+        "iPhone XS Max",
+        "iPhone 11",
+        "iPhone 11 Pro",
+        "iPhone 11 Pro Max",
+        "iPhone SE (2nd Gen)",
+        "iPhone 12 mini",
+        "iPhone 12",
+        "iPhone 12 Pro",
+        "iPhone 12 Pro Max",
+        "iPhone 13 mini",
+        "iPhone 13",
+        "iPhone 13 Pro",
+        "iPhone 13 Pro Max",
+        "iPhone SE (3rd Gen)",
+        "iPhone 14",
+        "iPhone 14 Plus",
+        "iPhone 14 Pro",
+        "iPhone 14 Pro Max",
+        "iPhone 15",
+        "iPhone 15 Plus",
+        "iPhone 15 Pro",
+        "iPhone 15 Pro Max",
+        "iPhone 16",
+        "iPhone 16 Plus",
+        "iPhone 16 Pro",
+        "iPhone 16 Pro Max",
+      ];
+
+      const ALL_SOFTWARE = [
+        { name: "Gmail", icon: "fas fa-envelope text-red-500" },
+        { name: "Google Drive", icon: "fab fa-google-drive text-green-500" },
+        { name: "YouTube", icon: "fab fa-youtube text-red-600" },
+        { name: "Google Maps", icon: "fas fa-map-marker-alt text-green-600" },
+        { name: "Google Chrome", icon: "fab fa-chrome text-yellow-500" },
+        { name: "Google Photos", icon: "fas fa-images text-blue-500" },
+        { name: "Google Calendar", icon: "fas fa-calendar-alt text-blue-600" },
+        { name: "Google Docs", icon: "fas fa-file-word text-blue-500" },
+        { name: "Google Sheets", icon: "fas fa-file-excel text-green-500" },
+        {
+          name: "Google Slides",
+          icon: "fas fa-file-powerpoint text-yellow-500",
+        },
+        { name: "Google Keep", icon: "fas fa-sticky-note text-yellow-500" },
+        { name: "Google Meet", icon: "fas fa-video text-green-600" },
+        { name: "Google Chat", icon: "fas fa-comments text-green-500" },
+        { name: "Google App", icon: "fab fa-google text-blue-500" },
+        { name: "Google Translate", icon: "fas fa-language text-blue-500" },
+        { name: "Google Assistant", icon: "fas fa-microphone text-blue-400" },
+        { name: "Google Home", icon: "fas fa-home text-green-500" },
+        { name: "YouTube Music", icon: "fab fa-youtube text-red-500" },
+        { name: "YouTube Kids", icon: "fab fa-youtube text-red-400" },
+        { name: "YouTube Studio", icon: "fas fa-chart-line text-red-600" },
+        { name: "YouTube TV", icon: "fas fa-tv text-red-600" },
+        {
+          name: "Google Classroom",
+          icon: "fas fa-chalkboard-teacher text-green-600",
+        },
+        { name: "Google Tasks", icon: "fas fa-tasks text-blue-600" },
+        { name: "Google Earth", icon: "fas fa-globe-americas text-blue-500" },
+        { name: "Google News", icon: "far fa-newspaper text-red-500" },
+        { name: "Google Voice", icon: "fas fa-phone-alt text-green-500" },
+        { name: "Google One", icon: "fas fa-cloud text-blue-400" },
+        {
+          name: "Google Find My Device",
+          icon: "fas fa-mobile-alt text-green-500",
+        },
+        { name: "Google Wallet", icon: "fas fa-wallet text-blue-500" },
+        { name: "Google TV", icon: "fas fa-tv text-blue-600" },
+        {
+          name: "Google Authenticator",
+          icon: "fas fa-shield-alt text-gray-600",
+        },
+        { name: "Waze", icon: "fas fa-car text-blue-400" },
+        { name: "Snapseed", icon: "fas fa-leaf text-green-500" },
+        { name: "PhotoScan", icon: "fas fa-camera text-blue-500" },
+        { name: "Google Arts & Culture", icon: "fas fa-palette text-gray-500" },
+        { name: "Google Podcasts", icon: "fas fa-podcast text-blue-500" },
+        { name: "Google Analytics", icon: "fas fa-chart-bar text-orange-500" },
+        { name: "Google Ads", icon: "fas fa-ad text-blue-500" },
+        { name: "Blogger", icon: "fab fa-blogger text-orange-500" },
+        { name: "Google Admin", icon: "fas fa-user-cog text-blue-500" },
+        { name: "Google Play Books", icon: "fas fa-book text-blue-400" },
+        { name: "Google Family Link", icon: "fas fa-child text-blue-500" },
+        { name: "Google Fit", icon: "fas fa-heartbeat text-red-500" },
+        { name: "Gboard", icon: "fas fa-keyboard text-blue-500" },
+        {
+          name: "Socratic by Google",
+          icon: "fas fa-graduation-cap text-purple-500",
+        },
+      ];
+
+      function getSoftwareIcon(softwareName) {
+        const s = ALL_SOFTWARE.find((x) => x.name === softwareName);
+        return s
+          ? `<i class="${s.icon} w-3.5 flex items-center justify-center"></i>`
+          : `<i class="fas fa-code w-3.5 flex items-center justify-center text-current opacity-70"></i>`;
+      }
+
+      // --- State Management ---
+      const DEFAULT_ATTRS = {
+        device: [],
+        country: [],
+        software: [],
+        update: [],
+      };
+      const DEFAULT_BROWSERS = [
+        {
+          id: "default",
+          name: "System Default",
+          iconType: "fas",
+          iconClass: "fa-globe",
+          package: null,
+        },
+        {
+          id: "chrome",
+          name: "Chrome",
+          iconType: "fab",
+          iconClass: "fa-chrome",
+          package: "com.android.chrome",
+        },
+        {
+          id: "firefox",
+          name: "Firefox",
+          iconType: "fab",
+          iconClass: "fa-firefox",
+          package: "org.mozilla.firefox",
+        },
+        {
+          id: "opera",
+          name: "Opera",
+          iconType: "fab",
+          iconClass: "fa-opera",
+          package: "com.opera.browser",
+        },
+        {
+          id: "brave",
+          name: "Brave",
+          iconType: "fab",
+          iconClass: "fa-brave",
+          package: "com.brave.browser",
+        },
+        {
+          id: "duckduckgo",
+          name: "DuckDuckGo",
+          iconType: "fas",
+          iconClass: "fa-user-shield",
+          package: "com.duckduckgo.mobile.android",
+        },
+        {
+          id: "tor",
+          name: "Tor Browser",
+          iconType: "fas",
+          iconClass: "fa-user-secret",
+          package: "org.torproject.torbrowser",
+        },
+      ];
+
+      // Removed local storage references as requested
+
+      let state = {
+        role: localStorage.getItem("linker_auth_role") || null, // 'admin' | 'user' | null
+        userKey: localStorage.getItem("linker_user_key") || null,
+        selectedBrowser: localStorage.getItem("linker_browser") || "default",
+        currentView: "home",
+        filters: { device: "", country: "", software: "", update: "" },
+        searchQuery: "",
+        attributes: JSON.parse(JSON.stringify(DEFAULT_ATTRS)),
+        browsers: JSON.parse(JSON.stringify(DEFAULT_BROWSERS)),
+        links: [],
+        history: [],
+        users: [],
+        isAddModalOpen: false,
+        activeFilterDropdown: null,
+        activeBrowserDropdown: false,
+        requireAdminPIN: false,
+        adminEditAttr: null,
+        dropdownScrolls: {},
+        activeContextMenu: null,
+        activeAddModalDropdown: null,
+        addModalData: {
+          device: "",
+          country: "",
+          software: "",
+          update: "",
+          url: "",
+        },
+        viewingUserActivity: null,
+        confirmDialog: null,
+        isLoading: true,
+      };
+
+      const generateId = () =>
+        Date.now().toString() + Math.random().toString(36).substr(2, 9);
+      const handleDb = (promise) =>
+        promise.then(({ error }) => {
+          if (error) {
+            console.error("Supabase error:", error);
+            alert(
+              "Database Error: " +
+                error.message +
+                "\n\nPlease check if Row Level Security (RLS) is disabled.",
+            );
+          }
+        });
+      const saveState = () => {
+        // Deprecated: Migrating to direct Supabase calls per action
+      };
+      const setRole = (role, key = null) => {
+        state.role = role;
+        state.userKey = key;
+        state.currentView = "home";
+        if (role) {
+          localStorage.setItem("linker_auth_role", role);
+          if (key) localStorage.setItem("linker_user_key", key);
+        } else {
+          localStorage.removeItem("linker_auth_role");
+          localStorage.removeItem("linker_user_key");
+        }
+        render();
+      };
+
+      // --- Intent Logic ---
+      function generateBrowserIntent(url, browserId) {
+        let normalizedUrl = url.trim();
+        if (!/^https?:\/\//i.test(normalizedUrl)) {
+          normalizedUrl = "https://" + normalizedUrl;
+        }
+        if (browserId === "default") return normalizedUrl;
+
+        const browserConf = state.browsers.find((b) => b.id === browserId);
+        if (!browserConf || !browserConf.package) return normalizedUrl;
+
+        try {
+          const urlObj = new URL(normalizedUrl);
+          const scheme = urlObj.protocol.replace(":", "");
+          const hostAndPath = `${urlObj.host}${urlObj.pathname}${urlObj.search}${urlObj.hash}`;
+          return `intent://${hostAndPath}#Intent;scheme=${scheme};package=${browserConf.package};end;`;
+        } catch (e) {
+          return url;
+        }
+      }
+
+      // --- Event Delegation ---
+      document.getElementById("app").addEventListener("click", (e) => {
+        if (
+          state.activeFilterDropdown &&
+          !e.target.closest(".filter-dropdown-wrapper")
+        ) {
+          state.activeFilterDropdown = null;
+          render();
+        }
+        if (
+          state.activeBrowserDropdown &&
+          !e.target.closest("#browser-dropdown-wrapper")
+        ) {
+          state.activeBrowserDropdown = false;
+          render();
+        }
+        if (
+          state.activeAddModalDropdown &&
+          !e.target.closest(".add-modal-dropdown-wrapper")
+        ) {
+          state.activeAddModalDropdown = null;
+          render();
+        }
+
+        const target = e.target.closest("[data-action]");
+        if (!target) return;
+        const action = target.dataset.action;
+
+        if (action === "open-link") {
+          const linkId = target.dataset.id;
+          const link = state.links.find((l) => l.id === linkId);
+          if (link) {
+            link.usageCount = (link.usageCount || 0) + 1;
+            supabaseClient
+              .from("links")
+              .update({ usage_count: link.usageCount })
+              .eq("id", link.id)
+              .then();
+            const activeUserKey = state.userKey || "admin";
+
+            const newHist = {
+              id: generateId(),
+              userKey: activeUserKey,
+              linkId: link.id,
+              title: link.title,
+              url: link.url,
+              timestamp: new Date().toISOString(),
+            };
+            state.history.unshift(newHist);
+            supabaseClient
+              .from("history")
+              .insert({
+                id: newHist.id,
+                user_key: newHist.userKey,
+                link_id: newHist.linkId,
+                title: newHist.title,
+                url: newHist.url,
+                timestamp: newHist.timestamp,
+              })
+              .then(({ error }) => {
+                if (error) console.error("History Insert Error:", error);
+              });
+            if (state.history.length > 500)
+              state.history = state.history.slice(0, 500);
+
+            if (state.role === "user" && state.userKey) {
+              const user = state.users.find((u) => u.key === state.userKey);
+              if (user) {
+                if (!user.usage) user.usage = {};
+                user.usage[link.id] = (user.usage[link.id] || 0) + 1;
+              }
+            }
+
+            const finalUrl = generateBrowserIntent(
+              link.url,
+              state.selectedBrowser,
+            );
+            window.open(finalUrl, "_blank");
+            const container = document.getElementById("links-container");
+            if (container) container.innerHTML = renderLinksContent();
+            else render();
+          }
+        } else if (action === "close-context-menu") {
+          state.activeContextMenu = null;
+          render();
+        } else if (action === "toggle-pin") {
+          const linkId = target.dataset.id;
+          const link = state.links.find((l) => l.id === linkId);
+          if (link) {
+            if (state.role === "admin") {
+              link.isPinned = !link.isPinned;
+              supabaseClient
+                .from("links")
+                .update({ is_pinned: link.isPinned })
+                .eq("id", link.id)
+                .then();
+            } else if (state.role === "user" && state.userKey) {
+              const user = state.users.find((u) => u.key === state.userKey);
+              if (user) {
+                if (!user.pinned) user.pinned = [];
+                if (user.pinned.includes(link.id)) {
+                  user.pinned = user.pinned.filter((id) => id !== link.id);
+                  supabaseClient
+                    .from("user_pinned_links")
+                    .delete()
+                    .match({ user_key: state.userKey, link_id: link.id })
+                    .then();
+                } else {
+                  user.pinned.push(link.id);
+                  supabaseClient
+                    .from("user_pinned_links")
+                    .insert({ user_key: state.userKey, link_id: link.id })
+                    .then();
+                }
+              }
+            }
+            state.activeContextMenu = null;
+
+            render();
+          }
+        } else if (action === "nav") {
+          state.currentView = target.dataset.view;
+          render();
+        } else if (action === "del-link") {
+          state.confirmDialog = {
+            title: "Delete Link",
+            message: "Are you sure you want to delete this link permanently?",
+            action: "confirm-del-link",
+            dataId: target.dataset.id,
+          };
+          render();
+        } else if (action === "confirm-del-link") {
+          state.links = state.links.filter(
+            (l) => l.id !== state.confirmDialog.dataId,
+          );
+          supabaseClient
+            .from("links")
+            .delete()
+            .eq("id", state.confirmDialog.dataId)
+            .then();
+          state.activeContextMenu = null;
+          state.confirmDialog = null;
+
+          render();
+        } else if (action === "del-attr") {
+          const type = target.dataset.type;
+          const val = target.dataset.val;
+          state.attributes[type] = state.attributes[type].filter(
+            (x) => x !== val,
+          );
+          supabaseClient
+            .from("attributes")
+            .delete()
+            .match({ type: type, value: val })
+            .then();
+          if (state.filters[type] === val) state.filters[type] = "";
+
+          render();
+        } else if (action === "copy-user-key") {
+          const key = target.dataset.key;
+          navigator.clipboard
+            .writeText(key)
+            .then(() => {
+              const originalHTML = target.innerHTML;
+              target.innerHTML = '<i class="fas fa-check"></i> Copied';
+              setTimeout(() => {
+                if (document.body.contains(target)) {
+                  target.innerHTML = originalHTML;
+                }
+              }, 2000);
+            })
+            .catch(() => {
+              alert("Failed to copy key.");
+            });
+        } else if (action === "delete-user") {
+          state.confirmDialog = {
+            title: "Delete User",
+            message:
+              "Are you sure you want to delete this user? All their pinned and history data will be lost.",
+            action: "confirm-delete-user",
+            dataId: target.dataset.key,
+          };
+          render();
+        } else if (action === "confirm-delete-user") {
+          state.users = state.users.filter(
+            (u) => u.key !== state.confirmDialog.dataId,
+          );
+          supabaseClient
+            .from("users")
+            .delete()
+            .eq("key", state.confirmDialog.dataId)
+            .then();
+          state.confirmDialog = null;
+
+          render();
+        } else if (action === "delete-browser") {
+          state.confirmDialog = {
+            title: "Delete Browser",
+            message: "Are you sure you want to remove this browser?",
+            action: "confirm-delete-browser",
+            dataId: target.dataset.id,
+          };
+          render();
+        } else if (action === "confirm-delete-browser") {
+          state.browsers = state.browsers.filter(
+            (b) => b.id !== state.confirmDialog.dataId,
+          );
+          supabaseClient
+            .from("browsers")
+            .delete()
+            .eq("id", state.confirmDialog.dataId)
+            .then();
+          if (state.selectedBrowser === state.confirmDialog.dataId) {
+            state.selectedBrowser = "default";
+            localStorage.setItem("linker_browser", "default");
+          }
+          state.confirmDialog = null;
+
+          render();
+        } else if (action === "close-confirm-dialog") {
+          state.confirmDialog = null;
+          render();
+        } else if (action === "view-user-activity") {
+          state.viewingUserActivity = target.dataset.key;
+          render();
+        } else if (action === "close-user-activity") {
+          state.viewingUserActivity = null;
+          render();
+        } else if (action === "logout") {
+          setRole(null);
+        } else if (action === "open-add-modal") {
+          state.isAddModalOpen = true;
+          state.addModalData = {
+            device: "",
+            country: "",
+            software: "",
+            update: "",
+            url: "",
+          };
+          state.activeAddModalDropdown = null;
+          render();
+        } else if (action === "close-add-modal") {
+          state.isAddModalOpen = false;
+          render();
+        } else if (action === "toggle-add-modal-dropdown") {
+          const type = target.dataset.type;
+          state.activeAddModalDropdown =
+            state.activeAddModalDropdown === type ? null : type;
+          render();
+        } else if (action === "set-add-modal-attr") {
+          const type = target.dataset.type;
+          state.addModalData[type] = target.dataset.val;
+          state.activeAddModalDropdown = null;
+          render();
+        } else if (action === "toggle-filter-dropdown") {
+          const type = target.dataset.type;
+          state.activeFilterDropdown =
+            state.activeFilterDropdown === type ? null : type;
+          render();
+        } else if (action === "set-custom-filter") {
+          const type = target.dataset.type;
+          const val = target.dataset.val;
+          state.filters[type] = state.filters[type] === val ? "" : val;
+          state.activeFilterDropdown = null;
+          render();
+        } else if (action === "open-attr-editor") {
+          state.adminEditAttr = target.dataset.type;
+          render();
+        } else if (action === "close-attr-editor") {
+          state.adminEditAttr = null;
+          render();
+        } else if (action === "quick-add-attr") {
+          const type = target.dataset.type;
+          const input = document.getElementById("add-val-" + type);
+          const val = input ? input.value.trim() : "";
+          if (val) {
+            let dup = false;
+            let existingVal = val;
+            for (let v of state.attributes[type]) {
+              if (v.toLowerCase() === val.toLowerCase()) {
+                dup = true;
+                existingVal = v;
+              }
+            }
+            if (!dup) {
+              state.attributes[type].push(val);
+              supabaseClient
+                .from("attributes")
+                .insert({ type: type, value: val })
+                .then();
+            }
+            render();
+          }
+        } else if (action === "quick-add-modal-attr") {
+          const type = target.dataset.type;
+          const input = document.getElementById("add-modal-val-" + type);
+          const val = input ? input.value.trim() : "";
+          if (val) {
+            let dup = false;
+            let existingVal = val;
+            for (let v of state.attributes[type]) {
+              if (v.toLowerCase() === val.toLowerCase()) {
+                dup = true;
+                existingVal = v;
+              }
+            }
+            if (!dup) {
+              state.attributes[type].push(val);
+              supabaseClient
+                .from("attributes")
+                .insert({ type: type, value: val })
+                .then();
+            }
+            state.addModalData[type] = existingVal;
+            state.activeAddModalDropdown = null;
+            render();
+          }
+        } else if (action === "toggle-browser-popup") {
+          state.activeBrowserDropdown = !state.activeBrowserDropdown;
+          state.activeFilterDropdown = null;
+          render();
+        } else if (action === "select-browser") {
+          state.selectedBrowser = target.dataset.val;
+          localStorage.setItem("linker_browser", state.selectedBrowser);
+          state.activeBrowserDropdown = false;
+          render();
+        }
+      });
+
+      window.filterDropdownOptions = function (input, listId) {
+        const query = input.value.toLowerCase();
+        const list = document.getElementById(listId);
+        if (!list) return;
+        const items = list.querySelectorAll("button[data-val]");
+        items.forEach((item) => {
+          const val = item.dataset.val || "";
+          const textSpan = item.querySelector("span:last-child");
+          const itemText = textSpan ? textSpan.textContent.toLowerCase() : "";
+          if (val.toLowerCase().includes(query) || itemText.includes(query)) {
+            item.style.setProperty("display", "flex", "important");
+          } else {
+            item.style.setProperty("display", "none", "important");
+          }
+        });
+      };
+
+      document.getElementById("app").addEventListener("submit", (e) => {
+        const target = e.target.closest("[data-action]");
+        if (!target) return;
+        e.preventDefault();
+        const action = target.dataset.action;
+
+        if (action === "login") {
+          const errorEl = document.getElementById("loginError");
+
+          if (state.requireAdminPIN) {
+            const pin = document.getElementById("adminPin").value.trim();
+            if (pin === "SaGoRsaRdeR2003") {
+              state.requireAdminPIN = false;
+              setRole("admin");
+            } else {
+              errorEl.textContent = "Invalid PIN.";
+              errorEl.classList.remove("hidden");
+            }
+            return;
+          }
+
+          const key = document.getElementById("activationKey").value.trim();
+
+          if (key === "01922755197") {
+            state.requireAdminPIN = true;
+            render();
+          } else {
+            const user = state.users.find((u) => u.key === key);
+            if (user) {
+              if (user.isUsed) {
+                errorEl.textContent = "This key has already been used.";
+                errorEl.classList.remove("hidden");
+              } else {
+                user.isUsed = true;
+                supabaseClient
+                  .from("users")
+                  .update({ is_used: true })
+                  .eq("key", user.key)
+                  .then();
+                // sync removed saveState()
+                setRole("user", user.key);
+              }
+            } else {
+              errorEl.textContent = "Invalid key. Please try again.";
+              errorEl.classList.remove("hidden");
+            }
+          }
+        } else if (action === "add-attr") {
+          const type = target.dataset.type;
+          const val = target.elements["val"].value.trim();
+          let dup = false;
+          for (let v of state.attributes[type]) {
+            if (v.toLowerCase() === val.toLowerCase()) dup = true;
+          }
+          if (val && !dup) {
+            state.attributes[type].push(val);
+            supabaseClient
+              .from("attributes")
+              .insert({ type: type, value: val })
+              .then();
+
+            render();
+          }
+          target.reset();
+        } else if (action === "create-user") {
+          const name = target.elements["userName"]?.value.trim();
+          if (!name) return;
+          const chars =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+          let key = "";
+          for (let i = 0; i < 25; i++)
+            key += chars.charAt(Math.floor(Math.random() * chars.length));
+
+          const newUser = {
+            key,
+            name,
+            isUsed: false,
+            isBanned: false,
+            createdAt: new Date().toISOString(),
+          };
+          state.users.unshift(newUser);
+          supabaseClient
+            .from("users")
+            .insert({
+              key: newUser.key,
+              name: newUser.name,
+              is_used: newUser.isUsed,
+              is_banned: newUser.isBanned,
+              created_at: newUser.createdAt,
+            })
+            .then();
+
+          render();
+        } else if (action === "create-browser") {
+          const bName = target.elements["browserName"].value.trim();
+          const bPkg = target.elements["browserPackage"].value.trim();
+          if (bName && bPkg) {
+            const id = bName.toLowerCase().replace(/[^a-z0-9]/g, "-");
+            const newBrowser = {
+              id,
+              name: bName,
+              iconType: "fas",
+              iconClass: "fa-globe",
+              package: bPkg,
+            };
+            state.browsers.push(newBrowser);
+            supabaseClient
+              .from("browsers")
+              .insert({
+                id: newBrowser.id,
+                name: newBrowser.name,
+                icon_type: newBrowser.iconType,
+                icon_class: newBrowser.iconClass,
+                package: newBrowser.package,
+              })
+              .then();
+            if (state.selectedBrowser === "default") {
+              state.selectedBrowser = id;
+              localStorage.setItem("linker_browser", id);
+            }
+
+            render();
+          }
+        } else if (action === "add-link") {
+          e.preventDefault();
+          const url = target.elements["url"].value.trim();
+          const device = target.elements["device"].value;
+          const country = target.elements["country"].value;
+          const software = target.elements["software"].value;
+          const update = target.elements["update"].value;
+
+          if (!url || !device || !country || !software || !update) {
+            alert(
+              "Please make sure to fill in the URL and select all attributes (Region, Device, Software, Update).",
+            );
+            return;
+          }
+
+          const newLink = {
+            id: generateId(),
+            title: url.replace(/^https?:\/\//, "").split("/")[0], // Extract domain as title
+            url,
+            device,
+            country,
+            software,
+            update,
+            usageCount: 0,
+            isPinned: false,
+            createdAt: new Date().toISOString(),
+          };
+          state.links.unshift(newLink);
+          supabaseClient
+            .from("links")
+            .insert({
+              id: newLink.id,
+              title: newLink.title,
+              url: newLink.url,
+              device: newLink.device,
+              country: newLink.country,
+              software: newLink.software,
+              update_attr: newLink.update,
+              usage_count: 0,
+              is_pinned: false,
+              created_at: newLink.createdAt,
+            })
+            .then();
+
+          state.isAddModalOpen = false;
+          state.addModalData = {
+            device: "",
+            country: "",
+            software: "",
+            update: "",
+            url: "",
+          };
+          state.currentView = "home";
+          render();
+        }
+      });
+
+      document.getElementById("app").addEventListener("input", (e) => {
+        if (e.target.id === "searchInput") {
+          state.searchQuery = e.target.value.toLowerCase();
+          const container = document.getElementById("links-container");
+          if (container) container.innerHTML = renderLinksContent();
+        }
+      });
+
+      document.getElementById("app").addEventListener("change", (e) => {
+        if (e.target.id === "browserSelect") {
+          state.selectedBrowser = e.target.value;
+          localStorage.setItem("linker_browser", state.selectedBrowser);
+          render();
+        }
+      });
+
+      let lastScrollTop = 0;
+      let isHeaderHidden = false;
+      document.getElementById("app").addEventListener(
+        "scroll",
+        (e) => {
+          if (e.target.id === "main-scroll") {
+            const fh = document.getElementById("filter-header-wrapper");
+            if (fh) {
+              const st = e.target.scrollTop;
+              if (Math.abs(st - lastScrollTop) > 5) {
+                if (st > lastScrollTop && st > 30) {
+                  if (!isHeaderHidden) {
+                    fh.style.transform = "translateY(-100%)";
+                    isHeaderHidden = true;
+                  }
+                } else if (st < lastScrollTop) {
+                  if (isHeaderHidden) {
+                    fh.style.transform = "translateY(0%)";
+                    isHeaderHidden = false;
+                  }
+                }
+                lastScrollTop = Math.max(0, st);
+              }
+            }
+          }
+        },
+        true,
+      );
+
+      // --- Render System ---
+      function escapeHTML(str) {
+        if (!str) return "";
+        return str
+          .toString()
+          .replace(
+            /[&<>'"]/g,
+            (tag) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                "'": "&#39;",
+                '"': "&quot;",
+              })[tag],
+          );
+      }
+
+      let scrollState = new Map();
+      function render() {
+        const app = document.getElementById("app");
+        if (state.isLoading) {
+          app.innerHTML =
+            '<div class="h-full flex items-center justify-center flex-col bg-pink-50"><i class="fas fa-spinner fa-spin text-pink-500 text-3xl mb-4"></i><span class="text-stone-800 font-bold">Connecting to Cloud...</span></div>';
+          return;
+        }
+
+        if (state.role === "user" && state.userKey) {
+          const userExists = state.users.some((u) => u.key === state.userKey);
+          if (!userExists) {
+            setRole(null);
+            return;
+          }
+        }
+
+        scrollState.clear();
+        document
+          .querySelectorAll(".overflow-y-auto, .overflow-auto")
+          .forEach((el, index) => {
+            const key = el.id || "scroll-" + index;
+            scrollState.set(key, el.scrollTop);
+          });
+
+        let htmlContent = renderDashboard();
+        if (!state.role) {
+          htmlContent += `
+                    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-white/40 backdrop-blur-lg p-4 pointer-events-auto">
+                        <div class="absolute inset-0 bg-pink-900/10 mix-blend-multiply"></div>
+                        ${renderLoginBox()}
+                    </div>
+                `;
+        }
+        app.innerHTML = htmlContent;
+
+        document
+          .querySelectorAll(".overflow-y-auto, .overflow-auto")
+          .forEach((el, index) => {
+            const key = el.id || "scroll-" + index;
+            if (scrollState.has(key)) el.scrollTop = scrollState.get(key);
+          });
+        document.querySelectorAll('[id^="dropdown-list-"]').forEach((el) => {
+          const type = el.id.replace("dropdown-list-", "");
+          if (state.dropdownScrolls[type] !== undefined) {
+            el.scrollTop = state.dropdownScrolls[type];
+          }
+        });
+      }
+
+      // --- Views ---
+      function renderLoginBox() {
+        return `
+                <div class="w-full max-w-md p-8 rounded-3xl bg-white/90 border border-pink-100 shadow-2xl relative z-[110]">
+                        <h1 class="text-xl sm:text-2xl font-black tracking-tight text-center text-pink-950 mb-8 leading-snug">
+                            ${state.requireAdminPIN ? "Enter Admin PIN" : "Enter the secret key received from the admin"}
+                        </h1>
+                        
+                        <form data-action="login" class="space-y-4">
+                            <div>
+                                ${
+                                  state.requireAdminPIN
+                                    ? `
+                                    <input type="password" id="adminPin" placeholder="Enter PIN..." class="w-full px-5 py-3.5 bg-pink-50/50 border border-pink-200 rounded-xl text-stone-800 placeholder-stone-400 focus:outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100 transition-all font-bold text-center tracking-widest" required>
+                                `
+                                    : `
+                                    <input type="text" id="activationKey" placeholder="Activation Key..." class="w-full px-5 py-3.5 bg-pink-50/50 border border-pink-200 rounded-xl text-stone-800 placeholder-stone-400 focus:outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100 transition-all font-bold text-center tracking-widest" required>
+                                `
+                                }
+                            </div>
+                            <p id="loginError" class="text-rose-500 text-sm text-center font-bold hidden"></p>
+                            <button type="submit" class="w-full py-4 px-4 bg-pink-500 hover:bg-pink-400 text-white rounded-xl font-bold transition-all shadow-lg shadow-pink-500/30 text-base">
+                                Authenticate
+                            </button>
+                        </form>
+
+                        ${
+                          !state.requireAdminPIN
+                            ? `
+                        <div class="mt-6 text-center">
+                            <a href="https://wa.me/8801946620424?text=Please%20give%20me%20a%20secret%20key" target="_blank" class="inline-flex items-center justify-center gap-2 text-emerald-600 hover:text-emerald-700 font-bold text-[13px] hover:underline transition-colors pb-1">
+                                <i class="fab fa-whatsapp text-lg"></i> Contact the Admin
+                            </a>
+                        </div>
+                        `
+                            : ""
+                        }
+                    </div>
+                </div>
+            `;
+      }
+
+      function renderBottomNav() {
+        const navItems = [
+          { id: "home", icon: "fa-home", label: "Home" },
+          { id: "history", icon: "fa-history", label: "History" },
+          { id: "pinned", icon: "fa-thumbtack", label: "Pinned" },
+        ];
+
+        if (state.role === "admin") {
+          navItems.push({
+            id: "members",
+            icon: "fa-user-shield",
+            label: "Members",
+          });
+        }
+
+        return navItems
+          .map(
+            (item) => `
+                <button data-action="nav" data-view="${item.id}" class="flex flex-col items-center justify-center w-full h-full ${state.currentView === item.id ? "text-pink-600" : "text-stone-800 hover:text-stone-900"} transition-all ${state.currentView === item.id ? "bg-pink-50/50" : ""}">
+                    <i class="fas ${item.icon} text-[18px] mb-1.5 leading-none ${state.currentView === item.id ? "scale-110 drop-shadow-sm" : ""} transition-transform"></i>
+                    <span class="text-[10px] font-bold">${item.label}</span>
+                </button>
+            `,
+          )
+          .join("");
+      }
+
+      function renderLinkCard(link) {
+        let isPinned = false;
+        if (state.role === "admin") {
+          isPinned = link.isPinned;
+        } else if (state.role === "user" && state.userKey) {
+          const user = state.users.find((u) => u.key === state.userKey);
+          if (user && user.pinned) {
+            isPinned = user.pinned.includes(link.id);
+          }
+        }
+
+        return `
+                <div class="bg-white border border-pink-100 p-2.5 sm:p-3 rounded-xl shadow-sm transition-all group flex flex-row items-center justify-between gap-3 relative overflow-hidden">
+                    <div class="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-bl from-pink-50/80 to-transparent rounded-full pointer-events-none"></div>
+                    
+                    <div class="absolute top-2 right-2 flex gap-1.5 z-20">
+                        <button data-action="toggle-pin" data-id="${link.id}" class="w-6 h-6 flex items-center justify-center rounded-full bg-stone-50 hover:bg-pink-100 transition-colors text-[10px] ${isPinned ? "text-pink-600 bg-pink-50" : "text-stone-800"}">
+                            <i class="fas fa-thumbtack"></i>
+                        </button>
+                        ${
+                          state.role === "admin"
+                            ? `
+                        <button data-action="del-link" data-id="${link.id}" class="w-6 h-6 flex items-center justify-center rounded-full bg-stone-50 hover:bg-rose-100 text-stone-400 hover:text-rose-600 transition-colors text-[10px]">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        `
+                            : ""
+                        }
+                    </div>
+
+                    <div class="flex-1 min-w-0 z-10 flex flex-col justify-center mt-4">
+                        ${(() => {
+                          let count = 0;
+                          if (state.role === "user" && state.userKey) {
+                            const user = state.users.find(
+                              (u) => u.key === state.userKey,
+                            );
+                            count = user?.usage?.[link.id] || 0;
+                          } else if (state.role === "admin") {
+                            count = state.history.filter(
+                              (h) =>
+                                h.userKey === "admin" && h.linkId === link.id,
+                            ).length;
+                          }
+
+                          if (count === 0) return "";
+
+                          const fraction = Math.min(count, 3) / 3;
+                          const dashLength = 65.973;
+                          const dashOffset = dashLength - dashLength * fraction;
+
+                          return `
+                                <div class="flex items-center gap-1.5 mb-1.5 text-red-500 w-max">
+                                    <div class="relative flex items-center justify-center w-6 h-6">
+                                        <svg class="absolute inset-[2px] w-[calc(100%-4px)] h-[calc(100%-4px)] text-current origin-center" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke-dasharray="2 4" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10"></path>
+                                        </svg>
+                                        <svg class="absolute inset-0 w-full h-full text-current origin-center" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-opacity="0.15" stroke-width="3" fill="none"></circle>
+                                            <circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="${dashLength}" stroke-dashoffset="${dashOffset}" stroke-linecap="round" class="-rotate-90 origin-center" style="transition: stroke-dashoffset 0.3s ease;"></circle>
+                                        </svg>
+                                        <span class="text-[9px] font-black tracking-tighter">${count}</span>
+                                    </div>
+                                    <span class="text-sm font-bold tracking-tight">time${count > 1 ? "s" : ""}</span>
+                                </div>
+                            `;
+                        })()}
+                        <div class="flex flex-wrap items-center gap-1 mb-1">
+                            <span class="bg-blue-50/80 text-blue-700 text-[8px] px-1 py-0.5 rounded font-bold uppercase tracking-wider border border-blue-100/50 flex items-center gap-1"><i class="fas fa-mobile-alt opacity-70"></i> ${escapeHTML(link.device)}</span>
+                            <span class="bg-emerald-50/80 text-emerald-700 text-[8px] px-1 py-0.5 rounded font-bold uppercase tracking-wider border border-emerald-100/50 flex items-center gap-1">${getFlag(link.country)} ${escapeHTML(link.country)}</span>
+                            <span class="bg-purple-50/80 text-purple-700 text-[8px] px-1 py-0.5 rounded font-bold uppercase tracking-wider border border-purple-100/50 flex items-center gap-1">${getSoftwareIcon(link.software)} ${escapeHTML(link.software)}</span>
+                            <span class="bg-orange-50/80 text-orange-700 text-[8px] px-1 py-0.5 rounded font-bold uppercase tracking-wider border border-orange-100/50 flex items-center gap-1"><i class="fas fa-sync-alt opacity-70"></i> ${escapeHTML(link.update)}</span>
+                        </div>
+                    </div>
+
+                        <div class="flex items-center z-10 shrink-0 relative mt-4">
+                        <button data-action="open-link" data-id="${link.id}" class="inline-flex items-center justify-center gap-1.5 bg-pink-900 text-white px-3 sm:px-4 h-9 sm:h-10 rounded-xl font-bold text-[12px] hover:bg-pink-800 transition-colors shadow-md shadow-pink-900/10 active:scale-95 border border-pink-950">
+                            Run <i class="fas fa-play text-[9px]"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+      }
+
+      function renderLinksContent() {
+        let visibleLinks = state.links;
+        if (state.filters.device)
+          visibleLinks = visibleLinks.filter(
+            (l) => l.device === state.filters.device,
+          );
+        if (state.filters.country)
+          visibleLinks = visibleLinks.filter(
+            (l) => l.country === state.filters.country,
+          );
+        if (state.filters.software)
+          visibleLinks = visibleLinks.filter(
+            (l) => l.software === state.filters.software,
+          );
+        if (state.filters.update)
+          visibleLinks = visibleLinks.filter(
+            (l) => l.update === state.filters.update,
+          );
+
+        if (state.searchQuery) {
+          const q = state.searchQuery;
+          visibleLinks = visibleLinks.filter(
+            (l) =>
+              l.title.toLowerCase().includes(q) ||
+              l.url.toLowerCase().includes(q),
+          );
+        }
+
+        const topBar = `
+                <div class="flex justify-between items-center pt-4 px-4 sm:px-6 pb-2">
+                    <div class="text-[11px] font-bold text-stone-800 uppercase tracking-widest bg-white/60 px-3 py-1.5 rounded-full border border-pink-100 shadow-sm flex items-center gap-1.5">
+                        <i class="fas fa-link text-stone-400"></i> Total Links: <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">${visibleLinks.length}</span>
+                    </div>
+                    ${
+                      state.role === "admin"
+                        ? `
+                    <button data-action="open-add-modal" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-xs font-bold transition-colors shadow-sm flex items-center gap-2 relative z-0">
+                        <i class="fas fa-plus"></i> Add link
+                    </button>
+                    `
+                        : ""
+                    }
+                </div>
+            `;
+
+        if (visibleLinks.length === 0) {
+          return `
+                    ${topBar}
+                    <div class="text-center py-16 bg-white/40 rounded-3xl border-2 border-dashed border-pink-200 mt-2 mx-4 sm:mx-6">
+                        <i class="fas fa-filter text-4xl text-pink-200 mb-4 drop-shadow-sm"></i>
+                        <p class="text-stone-800 text-[15px] font-bold">No records found matching filters.</p>
+                    </div>
+                `;
+        }
+
+        return `
+                ${topBar}
+                <div class="p-4 sm:p-6 space-y-4 pt-2">
+                    ${visibleLinks.map((link) => renderLinkCard(link)).join("")}
+                </div>
+            `;
+      }
+
+      function renderHome() {
+        const filterTypes = ["device", "country", "software", "update"];
+        const icons = {
+          device: "fa-mobile-alt",
+          country: "fa-globe",
+          software: "fa-code",
+          update: "fa-sync-alt",
+        };
+        const labels = {
+          device: "Device",
+          country: "Region",
+          software: "Software",
+          update: "Update",
+        };
+
+        const filterHeader = `
+                <div class="bg-white p-3 border-b border-pink-100 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-3 shrink-0 z-50 w-full relative">
+                    ${filterTypes
+                      .map((type) => {
+                        let selectedHTML =
+                          '<span class="truncate">Select ' +
+                          labels[type] +
+                          "</span>";
+                        if (state.filters[type]) {
+                          const val = escapeHTML(state.filters[type]);
+                          if (type === "country")
+                            selectedHTML =
+                              '<div class="flex items-center gap-2 truncate">' +
+                              getFlag(state.filters[type]) +
+                              ' <span class="truncate">' +
+                              val +
+                              "</span></div>";
+                          else if (type === "software")
+                            selectedHTML =
+                              '<div class="flex items-center gap-2 truncate">' +
+                              getSoftwareIcon(state.filters[type]) +
+                              ' <span class="truncate">' +
+                              val +
+                              "</span></div>";
+                          else
+                            selectedHTML =
+                              '<span class="truncate">' + val + "</span>";
+                        }
+
+                        return `
+                        <div class="relative w-full filter-dropdown-wrapper">
+                            <button data-action="toggle-filter-dropdown" data-type="${type}" class="w-full flex items-center justify-between bg-pink-50 hover:bg-pink-100 border ${state.activeFilterDropdown === type ? "border-pink-400 ring-2 ring-pink-100" : "border-pink-200"} text-pink-900 py-2 sm:py-2.5 px-3 rounded-xl text-[10px] sm:text-xs font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-300 cursor-pointer transition-colors max-w-full overflow-hidden">
+                                ${selectedHTML}
+                                <i class="fas fa-chevron-${state.activeFilterDropdown === type ? "up" : "down"} text-[10px] opacity-70 shrink-0 transition-transform"></i>
+                            </button>
+                            ${
+                              state.activeFilterDropdown === type
+                                ? `
+                                <div class="absolute top-full left-0 mt-1 w-full md:w-[220px] bg-white border border-stone-200 rounded-[4px] shadow-[0_4px_12px_rgba(0,0,0,0.15)] z-50 flex flex-col font-sans">
+                                    <div class="p-2 border-b border-stone-200 flex items-center gap-2 bg-white">
+                                        <i class="fas fa-search text-stone-400 text-[10px] sm:text-xs ml-1 relative"></i>
+                                        <input type="text" placeholder="Search" class="w-full text-xs sm:text-sm outline-none text-stone-800 bg-transparent" oninput="window.filterDropdownOptions(this, 'dropdown-list-${type}')" autofocus>
+                                    </div>
+                                    <div id="dropdown-list-${type}" class="max-h-[200px] overflow-y-auto py-1 flex-1 hide-scrollbar bg-white" onscroll="state.dropdownScrolls['${type}'] = this.scrollTop">
+                                        ${(type === "country"
+                                          ? ALL_COUNTRIES.map((c) => c.name)
+                                          : type === "device"
+                                            ? ALL_IPHONES
+                                            : type === "software"
+                                              ? [
+                                                  ...ALL_SOFTWARE.map(
+                                                    (s) => s.name,
+                                                  ),
+                                                  ...(state.attributes[
+                                                    "software"
+                                                  ] || []),
+                                                ]
+                                              : state.attributes[type]
+                                        )
+                                          .map(
+                                            (val) => `
+                                            <button data-action="set-custom-filter" data-type="${type}" data-val="${escapeHTML(val)}" class="w-full text-left px-3 py-2 text-xs sm:text-sm transition-colors flex items-center gap-2.5 hover:bg-stone-200/50 ${state.filters[type] === val ? "bg-stone-100" : ""}">
+                                                <div class="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px] border ${state.filters[type] === val ? "border-indigo-600 bg-indigo-600" : "border-stone-400"} rounded-[3px] flex items-center justify-center shrink-0 transition-colors">
+                                                    ${state.filters[type] === val ? '<i class="fas fa-check text-[9px] sm:text-[10px] text-white"></i>' : ""}
+                                                </div>
+                                                <span class="truncate text-stone-700 flex items-center gap-2">${type === "country" ? getFlag(val) : type === "software" ? getSoftwareIcon(val) : ""}${escapeHTML(val)}</span>
+                                            </button>
+                                        `,
+                                          )
+                                          .join("")}
+                                    </div>
+                                    ${
+                                      state.role === "admin" &&
+                                      type !== "country" &&
+                                      type !== "device"
+                                        ? `
+                                        <div class="p-2 border-t border-stone-200 bg-stone-50 flex items-center gap-1.5">
+                                            <input type="text" id="add-val-${type}" placeholder="Add new..." class="w-full text-[11px] sm:text-xs outline-none px-2 py-1.5 border border-stone-300 rounded-[3px] text-stone-700 focus:border-indigo-500 transition-colors" onkeydown="if(event.key==='Enter') document.getElementById('btn-add-${type}').click()">
+                                            <button id="btn-add-${type}" data-action="quick-add-attr" data-type="${type}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-[3px] text-[11px] sm:text-xs font-bold transition-colors">Add</button>
+                                        </div>
+                                    `
+                                        : ""
+                                    }
+                                </div>
+                            `
+                                : ""
+                            }
+                        </div>
+                    `;
+                      })
+                      .join("")}
+                </div>
+            `;
+
+        return `
+                <div class="flex-1 min-h-0 flex flex-col outline-none w-full relative overflow-hidden">
+                    <div id="filter-header-wrapper" class="absolute top-0 left-0 w-full z-50 transition-transform duration-300 ease-out" style="transform: translateY(${isHeaderHidden ? "-100%" : "0%"});">
+                        ${filterHeader}
+                    </div>
+                    <div class="flex-1 overflow-y-auto w-full pb-32 pt-[124px] md:pt-[76px]" id="main-scroll" style="overflow-anchor: none;">
+                        <div class="max-w-3xl mx-auto w-full relative h-full" id="links-container">
+                            ${renderLinksContent()}
+                        </div>
+                    </div>
+                </div>
+            `;
+      }
+
+      function renderAdmin() {
+        if (state.role !== "admin")
+          return renderPlaceholder(
+            "fa-lock",
+            "Access Denied",
+            "You do not have permission to view this section.",
+          );
+
+        return `
+                <div class="flex-1 min-h-0 overflow-y-auto px-4 pt-4 pb-32 sm:px-6 sm:pt-6 sm:pb-32 w-full animate-fadein">
+                    <div class="max-w-4xl mx-auto space-y-8 w-full block">
+                        
+                        <div class="mb-10 w-full">
+                            <h3 class="text-[13px] font-black text-pink-950 uppercase tracking-widest mb-4 px-2 flex items-center gap-2">
+                                <i class="fas fa-users text-pink-500"></i> Member Management
+                            </h3>
+                            <div class="bg-white border border-pink-100 rounded-3xl p-6 shadow-sm mb-6">
+                                <form data-action="create-user" class="flex flex-col sm:flex-row gap-3">
+                                    <input type="text" name="userName" placeholder="Enter User Name..." required class="flex-1 px-4 py-3 bg-pink-50/50 border border-pink-100 rounded-xl outline-none focus:ring-2 focus:ring-pink-300 font-bold placeholder-stone-400 text-stone-800 text-sm">
+                                    <button type="submit" class="bg-pink-500 hover:bg-pink-400 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-pink-500/30 whitespace-nowrap">Create Secret Key</button>
+                                </form>
+                            </div>
+
+                            <div class="space-y-3">
+                                ${state.users
+                                  .map(
+                                    (u) => `
+                                    <div class="bg-white border border-pink-100 p-4 rounded-2xl flex items-center justify-between gap-4 shadow-sm relative overflow-hidden">
+                                        <div class="flex flex-col gap-1 min-w-0 flex-1 z-10">
+                                            <div class="flex items-center gap-2">
+                                                <h4 class="font-bold text-stone-800 text-sm truncate">${escapeHTML(u.name)}</h4>
+                                                ${u.isUsed ? '<span class="bg-rose-100 text-rose-600 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">Expired</span>' : '<span class="bg-emerald-100 text-emerald-600 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">Active</span>'}
+                                            </div>
+                                            <code data-action="copy-user-key" data-key="${u.key}" class="cursor-pointer text-xs font-mono text-pink-600 bg-pink-50 px-2 py-1 rounded truncate block w-fit max-w-full hover:bg-pink-100 transition-colors" title="Click to copy">${escapeHTML(u.key)}</code>
+                                        </div>
+                                        <div class="z-10 shrink-0 flex items-center gap-2">
+                                            <button data-action="view-user-activity" data-key="${u.key}" class="px-3 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-bold text-[11px] transition-colors uppercase tracking-wider flex items-center gap-1">
+                                                <i class="fas fa-chart-line"></i> View Activity
+                                            </button>
+                                            <button data-action="delete-user" data-key="${u.key}" class="w-8 h-8 flex items-center justify-center bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg transition-colors">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `,
+                                  )
+                                  .join("")}
+                                ${state.users.length === 0 ? '<div class="text-center text-stone-800 text-sm italic mt-8">No users generated yet.</div>' : ""}
+                            </div>
+                        </div>
+
+                        <div class="mb-10 w-full">
+                            <h3 class="text-[13px] font-black text-pink-950 uppercase tracking-widest mb-4 px-2 flex items-center gap-2">
+                                <i class="fas fa-globe text-pink-500"></i> Browser Management
+                            </h3>
+                            <div class="bg-white border border-pink-100 rounded-3xl p-6 shadow-sm mb-6">
+                                <form data-action="create-browser" class="flex flex-col gap-3">
+                                    <div class="flex flex-col sm:flex-row gap-3">
+                                        <input type="text" name="browserName" placeholder="Browser Name (e.g. Vivaldi)" required class="flex-1 px-4 py-3 bg-pink-50/50 border border-pink-100 rounded-xl outline-none focus:ring-2 focus:ring-pink-300 font-bold placeholder-stone-400 text-stone-800 text-sm">
+                                        <input type="text" name="browserPackage" placeholder="Package name (e.g. com.vivaldi.browser)" required class="flex-1 px-4 py-3 bg-pink-50/50 border border-pink-100 rounded-xl outline-none focus:ring-2 focus:ring-pink-300 font-bold placeholder-stone-400 text-stone-800 text-sm">
+                                        <button type="submit" class="bg-pink-500 hover:bg-pink-400 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-pink-500/30 whitespace-nowrap">Add Browser</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="space-y-3">
+                                ${state.browsers
+                                  .map(
+                                    (b) => `
+                                    <div class="bg-white border border-pink-100 p-4 rounded-2xl flex items-center justify-between gap-4 shadow-sm relative overflow-hidden">
+                                        <div class="flex flex-col gap-1 min-w-0 flex-1 z-10">
+                                            <div class="flex items-center gap-2">
+                                                <i class="${b.iconType} ${b.iconClass} text-stone-800"></i>
+                                                <h4 class="font-bold text-stone-800 text-sm truncate">${escapeHTML(b.name)}</h4>
+                                                ${b.id === "default" ? '<span class="bg-stone-100 text-stone-800 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">System Default</span>' : ""}
+                                            </div>
+                                            ${b.package ? `<code class="text-xs font-mono text-stone-800 bg-stone-50 px-2 py-1 rounded truncate block w-fit max-w-full">${escapeHTML(b.package)}</code>` : ""}
+                                        </div>
+                                        ${
+                                          b.id !== "default"
+                                            ? `
+                                        <div class="z-10 shrink-0 flex items-center gap-2">
+                                            <button data-action="delete-browser" data-id="${b.id}" class="w-8 h-8 flex items-center justify-center bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg transition-colors">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                        `
+                                            : ""
+                                        }
+                                    </div>
+                                `,
+                                  )
+                                  .join("")}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+      }
+
+      function renderConfirmDialogModal() {
+        if (!state.confirmDialog) return "";
+        return `
+                <div class="absolute inset-0 z-[150] flex items-center justify-center p-4 bg-pink-950/50 backdrop-blur-sm">
+                    <div class="bg-white rounded-[24px] p-6 shadow-2xl w-full max-w-sm flex flex-col relative animate-fadein">
+                        <div class="w-12 h-12 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-center text-pink-950 mb-2">${escapeHTML(state.confirmDialog.title)}</h3>
+                        <p class="text-sm font-medium text-center text-stone-800 mb-6">${escapeHTML(state.confirmDialog.message)}</p>
+                        <div class="flex gap-3 w-full">
+                            <button data-action="close-confirm-dialog" class="flex-1 py-3 px-4 rounded-xl bg-stone-100 text-stone-700 font-bold hover:bg-stone-200 transition-colors">Cancel</button>
+                            <button data-action="${state.confirmDialog.action}" class="flex-1 py-3 px-4 rounded-xl bg-rose-500 text-white font-bold hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/30">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+      }
+
+      function renderUserActivityModal() {
+        if (!state.viewingUserActivity) return "";
+        const user = state.users.find(
+          (u) => u.key === state.viewingUserActivity,
+        );
+        if (!user) return "";
+
+        const openedLinks = user.usage
+          ? Object.entries(user.usage)
+              .map(([id, count]) => {
+                const link = state.links.find((l) => l.id === id);
+                return { link, count };
+              })
+              .filter((x) => x.link)
+          : [];
+
+        const pinnedLinks = user.pinned
+          ? user.pinned
+              .map((id) => state.links.find((l) => l.id === id))
+              .filter(Boolean)
+          : [];
+
+        return `
+                <div class="absolute inset-0 z-[120] flex items-center justify-center p-4 sm:p-6 bg-pink-950/40 backdrop-blur-sm overflow-y-auto">
+                    <div class="bg-white border border-pink-200 rounded-[32px] overflow-hidden w-full max-w-2xl flex flex-col h-full max-h-[80vh] shadow-2xl relative my-auto">
+                        <div class="p-6 border-b border-pink-100 flex items-center justify-between bg-pink-50/30 shrink-0">
+                            <div>
+                                <h3 class="text-lg font-black text-pink-950 flex items-center gap-2">
+                                    <i class="fas fa-user text-pink-500"></i> ${escapeHTML(user.name)} - Activity
+                                </h3>
+                                <p class="text-[11px] text-stone-800 font-bold mt-1">Secret Key: ${escapeHTML(user.key)}</p>
+                            </div>
+                            <button data-action="close-user-activity" class="text-stone-400 hover:text-pink-600 w-10 h-10 flex items-center justify-center rounded-full hover:bg-pink-100 transition-colors"><i class="fas fa-times text-xl"></i></button>
+                        </div>
+                        
+                        <div class="flex-1 overflow-y-auto p-6 space-y-8 bg-stone-50/30 hide-scrollbar">
+                            <!-- Opened Links -->
+                            <div>
+                                <h4 class="text-[13px] font-black text-stone-700 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <i class="fas fa-external-link-alt text-blue-500"></i> Opened Links
+                                </h4>
+                                <div class="space-y-3">
+                                    ${openedLinks.length === 0 ? '<p class="text-sm text-stone-800 font-medium italic">No links opened yet.</p>' : ""}
+                                    ${openedLinks
+                                      .map(({ link, count }) => {
+                                        const fraction = Math.min(count, 3) / 3;
+                                        const dashLength = 65.973;
+                                        const dashOffset =
+                                          dashLength - dashLength * fraction;
+                                        return `
+                                        <div class="bg-white p-3 rounded-2xl border border-stone-200 flex justify-between items-center shadow-sm">
+                                            <div class="min-w-0 pr-4">
+                                                <div class="flex items-center gap-1.5 text-red-500 w-max">
+                                                    <div class="relative flex items-center justify-center w-6 h-6">
+                                                        <svg class="absolute inset-[2px] w-[calc(100%-4px)] h-[calc(100%-4px)] text-current origin-center" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path stroke-dasharray="2 4" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10"></path>
+                                                        </svg>
+                                                        <svg class="absolute inset-0 w-full h-full text-current origin-center" viewBox="0 0 24 24">
+                                                            <circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-opacity="0.15" stroke-width="3" fill="none"></circle>
+                                                            <circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="${dashLength}" stroke-dashoffset="${dashOffset}" stroke-linecap="round" class="-rotate-90 origin-center" style="transition: stroke-dashoffset 0.3s ease;"></circle>
+                                                        </svg>
+                                                        <span class="text-[9px] font-black tracking-tighter">${count}</span>
+                                                    </div>
+                                                    <span class="text-xs font-bold tracking-tight">${count > 1 ? "times" : "time"}</span>
+                                                </div>
+                                            </div>
+                                            <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-1 rounded-lg shrink-0">
+                                                Used ${count} times
+                                            </span>
+                                        </div>
+                                    `;
+                                      })
+                                      .join("")}
+                                </div>
+                            </div>
+
+                            <!-- Pinned Links -->
+                            <div>
+                                <h4 class="text-[13px] font-black text-stone-700 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <i class="fas fa-thumbtack text-pink-500"></i> Pinned Links
+                                </h4>
+                                <div class="space-y-3">
+                                    ${pinnedLinks.length === 0 ? '<p class="text-sm text-stone-800 font-medium italic">No pinned links.</p>' : ""}
+                                    ${pinnedLinks
+                                      .map((link) => {
+                                        const count = user.usage
+                                          ? user.usage[link.id] || 0
+                                          : 0;
+                                        if (count === 0) return "";
+                                        const fraction = Math.min(count, 3) / 3;
+                                        const dashLength = 65.973;
+                                        const dashOffset =
+                                          dashLength - dashLength * fraction;
+                                        return `
+                                        <div class="bg-white p-3 rounded-2xl border border-stone-200 shadow-sm min-w-0">
+                                            <div class="flex items-center gap-1.5 text-red-500 w-max">
+                                                <div class="relative flex items-center justify-center w-6 h-6">
+                                                    <svg class="absolute inset-[2px] w-[calc(100%-4px)] h-[calc(100%-4px)] text-current origin-center" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path stroke-dasharray="2 4" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10"></path>
+                                                    </svg>
+                                                    <svg class="absolute inset-0 w-full h-full text-current origin-center" viewBox="0 0 24 24">
+                                                        <circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-opacity="0.15" stroke-width="3" fill="none"></circle>
+                                                        <circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="${dashLength}" stroke-dashoffset="${dashOffset}" stroke-linecap="round" class="-rotate-90 origin-center" style="transition: stroke-dashoffset 0.3s ease;"></circle>
+                                                    </svg>
+                                                    <span class="text-[9px] font-black tracking-tighter">${count}</span>
+                                                </div>
+                                                <span class="text-xs font-bold tracking-tight">${count > 1 ? "times" : "time"}</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                      })
+                                      .join("")}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+      }
+
+      function renderModal() {
+        if (!state.isAddModalOpen) return "";
+
+        const attrs = state.attributes;
+        const catKeys = ["device", "country", "software", "update"];
+        const requiredKeys = ["software", "update"];
+        const canAddLink = requiredKeys.every((k) => attrs[k].length > 0);
+
+        return `
+                <div class="absolute inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-pink-950/40 backdrop-blur-sm overflow-y-auto">
+                    <div class="bg-white border border-pink-200 rounded-[32px] px-6 pt-6 pb-12 sm:px-8 sm:pt-8 sm:pb-16 shadow-2xl relative w-full max-w-2xl my-auto flex flex-col">
+                        <div class="absolute inset-0 overflow-hidden rounded-[32px] pointer-events-none z-0">
+                            <div class="absolute -top-10 -right-10 w-40 h-40 bg-pink-50 rounded-full opacity-50"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mb-6 relative z-10 shrink-0">
+                            <h3 class="text-[13px] font-black text-pink-950 uppercase tracking-widest flex items-center gap-2"><i class="fas fa-plus-circle text-pink-500"></i> Add New Record</h3>
+                            <button data-action="close-add-modal" class="text-stone-400 hover:text-pink-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-pink-50 transition-colors"><i class="fas fa-times text-lg"></i></button>
+                        </div>
+
+                        <div class="relative z-10">
+                            <form data-action="add-link" class="flex flex-col gap-6 relative z-10">
+                                <div class="space-y-2">
+                                    <label class="text-[11px] font-bold uppercase text-stone-800 px-1 block mb-2">Attributes</label>
+                                    <div class="grid grid-cols-2 gap-4 bg-stone-50/50 border border-stone-100 p-5 rounded-3xl w-full">
+                                        ${catKeys
+                                          .map((k) => {
+                                            const options =
+                                              k === "country"
+                                                ? ALL_COUNTRIES.map(
+                                                    (c) => c.name,
+                                                  )
+                                                : k === "device"
+                                                  ? ALL_IPHONES
+                                                  : k === "software"
+                                                    ? [
+                                                        ...ALL_SOFTWARE.map(
+                                                          (s) => s.name,
+                                                        ),
+                                                        ...(attrs["software"] ||
+                                                          []),
+                                                      ]
+                                                    : attrs[k];
+                                            const selectedVal =
+                                              state.addModalData[k];
+                                            return `
+                                            <div class="space-y-1.5 flex flex-col relative add-modal-dropdown-wrapper">
+                                                <input type="hidden" name="${k}" value="${escapeHTML(selectedVal || "")}" required>
+                                                <label class="text-[10px] font-bold uppercase text-stone-800 block"><i class="fas fa-tag mr-1 text-pink-300"></i>${k === "country" ? "Region" : k}</label>
+                                                <button type="button" data-action="toggle-add-modal-dropdown" data-type="${k}" class="w-full flex items-center justify-between text-[11px] sm:text-xs bg-white border ${state.activeAddModalDropdown === k ? "border-pink-500 ring-1 ring-pink-500" : "border-pink-100"} rounded-xl px-3 py-2.5 text-stone-600 outline-none cursor-pointer transition-colors shadow-sm focus:ring-2 focus:ring-pink-300 block w-full text-left">
+                                                    <span class="truncate flex items-center gap-2 font-bold ${selectedVal ? "text-pink-950" : "text-stone-800"}">
+                                                        ${selectedVal ? (k === "country" ? getFlag(selectedVal) : k === "software" ? getSoftwareIcon(selectedVal) : "") + " " + escapeHTML(selectedVal) : "Select..."}
+                                                    </span>
+                                                    <i class="fas fa-caret-down text-[10px] ${state.activeAddModalDropdown === k ? "text-pink-500 transform rotate-180" : "text-stone-800"} shrink-0 transition-transform"></i>
+                                                </button>
+                                                ${
+                                                  state.activeAddModalDropdown ===
+                                                  k
+                                                    ? `
+                                                    <div class="absolute ${k === "software" || k === "update" ? "bottom-[100%] mb-1" : "top-[100%] mt-1"} ${k === "country" || k === "update" ? "right-0" : "left-0"} min-w-full w-[170px] sm:w-[210px] max-w-[85vw] bg-white border border-pink-200 rounded-xl shadow-xl z-[100] flex flex-col font-sans overflow-hidden">
+                                                        <div class="p-2 border-b border-pink-100 flex items-center gap-2 bg-pink-50/30">
+                                                            <i class="fas fa-search text-pink-300 text-[10px] sm:text-xs ml-1 relative"></i>
+                                                            <input type="text" placeholder="Search..." class="w-full text-xs sm:text-sm outline-none text-stone-800 bg-transparent font-medium" oninput="window.filterDropdownOptions(this, 'add-modal-dropdown-list-${k}')" autofocus>
+                                                        </div>
+                                                        <div id="add-modal-dropdown-list-${k}" class="max-h-[200px] overflow-y-auto py-1 flex-1 hide-scrollbar bg-white">
+                                                            ${options
+                                                              .map(
+                                                                (val) => `
+                                                                <button type="button" data-action="set-add-modal-attr" data-type="${k}" data-val="${escapeHTML(val)}" class="w-full text-left px-3 py-2 text-[11px] sm:text-sm transition-colors flex items-center gap-2.5 hover:bg-pink-50 ${selectedVal === val ? "bg-pink-50/50 text-pink-600" : "text-stone-700"}">
+                                                                    <div class="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px] border ${selectedVal === val ? "border-pink-500 bg-pink-500" : "border-stone-300"} rounded-[4px] flex items-center justify-center shrink-0 transition-colors">
+                                                                        ${selectedVal === val ? '<i class="fas fa-check text-[9px] sm:text-[10px] text-white"></i>' : ""}
+                                                                    </div>
+                                                                    <span class="truncate font-medium flex items-center gap-2">${k === "country" ? getFlag(val) : k === "software" ? getSoftwareIcon(val) : ""}${escapeHTML(val)}</span>
+                                                                </button>
+                                                            `,
+                                                              )
+                                                              .join("")}
+                                                        </div>
+                                                        ${
+                                                          state.role ===
+                                                            "admin" &&
+                                                          k !== "country" &&
+                                                          k !== "device"
+                                                            ? `
+                                                            <div class="p-2 border-t border-pink-100 bg-pink-50/50 flex items-center gap-1.5">
+                                                                <input type="text" id="add-modal-val-${k}" placeholder="Add new option..." class="w-full text-[11px] sm:text-xs outline-none px-2 py-1.5 border border-pink-200 rounded-[4px] text-stone-700 focus:border-pink-400 bg-white transition-colors" onkeydown="if(event.key==='Enter') { event.preventDefault(); document.getElementById('btn-add-modal-${k}').click(); }">
+                                                                <button type="button" id="btn-add-modal-${k}" data-action="quick-add-modal-attr" data-type="${k}" class="bg-pink-500 hover:bg-pink-600 text-white px-2.5 py-1.5 rounded-[4px] text-[11px] sm:text-xs font-bold transition-colors">Add</button>
+                                                            </div>
+                                                        `
+                                                            : ""
+                                                        }
+                                                    </div>
+                                                `
+                                                    : ""
+                                                }
+                                            </div>
+                                        `;
+                                          })
+                                          .join("")}
+                                    </div>
+                                </div>
+                                <div class="space-y-2 relative z-0">
+                                    <label class="text-[11px] font-bold uppercase text-stone-800 px-1">Enter Link</label>
+                                    <input type="url" name="url" placeholder="https://..." value="${escapeHTML(state.addModalData.url || "")}" oninput="state.addModalData.url = this.value" class="w-full bg-pink-50/50 border border-pink-100 rounded-2xl px-5 py-4 text-sm outline-none focus:ring-2 focus:ring-pink-300 text-stone-900 font-mono placeholder-stone-400 transition-all" required>
+                                </div>
+                                <button type="submit" class="w-full bg-pink-500 hover:bg-pink-400 text-white py-4 rounded-2xl text-[14px] font-black tracking-widest uppercase shadow-[0_8px_20px_rgba(236,72,153,0.3)] hover:shadow-[0_8px_25px_rgba(236,72,153,0.4)] transition-all mt-2 active:scale-95 flex items-center justify-center gap-2">
+                                    Upload <i class="fas fa-arrow-right text-xs"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+      }
+
+      // Placeholders for the new Views
+      function renderPlaceholder(icon, title, desc) {
+        return `
+                <div class="h-full flex flex-col items-center justify-center p-6 text-center w-full relative z-10 bg-pink-50/30 animate-fadein">
+                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center border-[6px] border-pink-100/50 shadow-xl shadow-pink-200/50 mb-8 text-pink-400">
+                        <i class="fas ${icon} text-4xl mt-1 ml-1"></i>
+                    </div>
+                    <h2 class="text-3xl font-black text-pink-950 mb-3 tracking-tight">${title}</h2>
+                    <p class="text-stone-800 font-medium max-w-sm leading-relaxed text-sm">${desc}</p>
+                </div>
+            `;
+      }
+
+      function renderPinnedView() {
+        let pinnedLinks = [];
+        if (state.role === "admin") {
+          pinnedLinks = state.links.filter((l) => l.isPinned);
+        } else if (state.role === "user" && state.userKey) {
+          const user = state.users.find((u) => u.key === state.userKey);
+          if (user && user.pinned) {
+            pinnedLinks = state.links.filter((l) => user.pinned.includes(l.id));
+          }
+        }
+
+        if (pinnedLinks.length === 0)
+          return renderPlaceholder(
+            "fa-thumbtack",
+            "No Pinned Records",
+            "Your favorite and most heavily accessed records will be pinned here for priority access.",
+          );
+
+        return `
+                <div class="flex-1 min-h-0 overflow-y-auto w-full px-4 pt-4 pb-32 sm:px-6 sm:pt-6 sm:pb-32" id="pinned-scroll">
+                    <div class="max-w-3xl mx-auto space-y-4">
+                        ${pinnedLinks.map((link) => renderLinkCard(link)).join("")}
+                    </div>
+                </div>
+            `;
+      }
+
+      function renderHistoryView() {
+        const activeKey = state.role === "admin" ? "admin" : state.userKey;
+        let viewHistory = state.history.filter((h) => h.userKey === activeKey);
+
+        let totalRecordsCount = 0;
+        if (state.role === "admin") {
+          totalRecordsCount = viewHistory.length;
+        } else if (state.role === "user" && state.userKey) {
+          const user = state.users.find((u) => u.key === state.userKey);
+          if (user && user.usage) {
+            totalRecordsCount = Object.values(user.usage).reduce(
+              (a, b) => a + b,
+              0,
+            );
+          }
+        }
+
+        // Deduplicate for display: keep only the most recent entry for each link per user
+        const seen = new Set();
+        viewHistory = viewHistory.filter((h) => {
+          const identifier = h.userKey + "_" + h.linkId;
+          if (seen.has(identifier)) return false;
+          seen.add(identifier);
+          return true;
+        });
+
+        if (viewHistory.length === 0)
+          return renderPlaceholder(
+            "fa-history",
+            "Activity History",
+            "Your link clicking history, session audits, and recent activity will appear here.",
+          );
+
+        return `
+                <div class="flex-1 min-h-0 overflow-y-auto w-full px-4 pt-4 pb-32 sm:px-6 sm:pt-6 sm:pb-32" id="history-scroll">
+                    <div class="max-w-3xl mx-auto space-y-4">
+                        <div class="flex items-center justify-between mb-4 px-2">
+                            <h3 class="text-stone-800 font-bold text-sm bg-stone-100 px-3 py-1.5 rounded-lg inline-flex items-center gap-2 border border-stone-200">
+                                <i class="fas fa-history text-stone-800"></i> Recent Activity
+                            </h3>
+                            <div class="text-[10px] font-bold text-stone-800 bg-stone-50 px-2 py-1 rounded-md border border-stone-200">
+                                ${totalRecordsCount} records
+                            </div>
+                        </div>
+                        ${viewHistory
+                          .map((item) => {
+                            const date = new Date(item.timestamp);
+                            const timeStr = date.toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            });
+                            const link = state.links.find(
+                              (l) => l.id === item.linkId,
+                            );
+                            if (!link) return "";
+                            return `
+                                <div class="flex flex-col gap-1.5">
+                                    <div class="pl-2 text-[10px] font-bold text-stone-800 uppercase tracking-widest flex items-center gap-1">
+                                        <i class="far fa-clock"></i> Accessed at ${timeStr}
+                                    </div>
+                                    ${renderLinkCard(link)}
+                                </div>
+                            `;
+                          })
+                          .join("")}
+                    </div>
+                </div>
+            `;
+      }
+
+      function renderActiveView() {
+        if (state.currentView === "home") return renderHome();
+        if (state.currentView === "history") return renderHistoryView();
+        if (state.currentView === "pinned") return renderPinnedView();
+        if (state.currentView === "members") return renderAdmin();
+        return renderHome();
+      }
+
+      function renderDashboard() {
+        return `
+                <div class="flex-1 flex flex-col h-full overflow-hidden w-full relative">
+                    
+                    <!-- Top App Bar -->
+                    <nav class="h-16 bg-white border-b border-pink-100 flex items-center justify-between px-4 sm:px-6 shrink-0 w-full shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative z-[60]">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 bg-pink-500 rounded-xl flex items-center justify-center shadow-inner shadow-pink-300">
+                                <i class="fas fa-bolt text-white text-sm animate-pulse"></i>
+                            </div>
+                            <div class="hidden sm:block leading-tight">
+                                <span class="text-lg font-black tracking-tight text-pink-950 block">Link<span class="text-pink-500">Router</span></span>
+                                <span class="text-[9px] font-bold text-stone-800 uppercase tracking-widest block">Core Environment</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-1 justify-end items-center gap-2 sm:gap-4 ml-4">
+                            <div class="hidden md:flex items-center gap-2 bg-pink-50/80 px-3 py-1.5 rounded-full border border-pink-100 ml-1">
+                                <div class="w-2 h-2 ${state.role === "admin" ? "bg-indigo-400" : "bg-emerald-400"} rounded-full animate-pulse shadow-sm"></div>
+                                <span class="text-[10px] font-black uppercase tracking-wider text-pink-900">${state.role === "admin" ? "Administrator" : "Verified User"}</span>
+                            </div>
+
+                            <div class="relative w-[130px] sm:w-[150px]" id="browser-dropdown-wrapper">
+                                <button data-action="toggle-browser-popup" class="w-full flex items-center justify-between bg-pink-50 hover:bg-pink-100 border border-pink-200 text-pink-900 py-2 sm:py-2.5 px-3 rounded-xl text-[10px] sm:text-xs font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-300 cursor-pointer transition-colors max-w-full overflow-hidden">
+                                     <div class="flex items-center gap-2 truncate">
+                                        ${(() => {
+                                          const activeB =
+                                            state.browsers.find(
+                                              (b) =>
+                                                b.id === state.selectedBrowser,
+                                            ) || state.browsers[0];
+                                          return `<i class="${activeB.iconType} ${activeB.iconClass} text-pink-500"></i>
+                                            <span class="truncate">${escapeHTML(activeB.name)}</span>`;
+                                        })()}
+                                     </div>
+                                     <i class="fas fa-chevron-${state.activeBrowserDropdown ? "up" : "down"} text-[10px] opacity-70 shrink-0"></i>
+                                </button>
+                                
+                                ${
+                                  state.activeBrowserDropdown
+                                    ? `
+                                    <div class="absolute top-full right-0 mt-2 w-full min-w-[150px] bg-white border border-pink-100 rounded-xl shadow-xl z-[100] animate-popup overflow-hidden p-1.5 font-sans max-h-64 overflow-y-auto">
+                                        ${state.browsers
+                                          .map(
+                                            (b) => `
+                                            <button data-action="select-browser" data-val="${b.id}" class="w-full text-left px-3 py-2.5 text-[11px] sm:text-xs font-bold transition-colors flex items-center gap-2.5 rounded-lg ${state.selectedBrowser === b.id ? "bg-pink-50 text-pink-600" : "text-stone-700 hover:bg-stone-50"}">
+                                                <i class="${b.iconType} ${b.iconClass} w-4 justify-center flex text-sm ${b.id === "chrome" ? "text-yellow-500" : b.id === "firefox" ? "text-orange-500" : b.id === "opera" ? "text-red-600" : b.id === "brave" ? "text-orange-400" : b.id === "duckduckgo" ? "text-emerald-600" : b.id === "tor" ? "text-purple-600" : "text-emerald-500"}"></i>
+                                                <span class="truncate">${escapeHTML(b.name)}</span>
+                                            </button>
+                                        `,
+                                          )
+                                          .join("")}
+                                    </div>
+                                `
+                                    : ""
+                                }
+                            </div>
+                            
+                            <div class="w-px h-5 bg-pink-100 mx-0.5 hidden sm:block"></div>
+
+                            <button data-action="logout" class="p-1.5 sm:p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-colors flex items-center justify-center shrink-0 w-8 h-8 sm:w-9 sm:h-9" title="Sign Out">
+                                <i class="fas fa-power-off text-xs sm:text-sm"></i>
+                            </button>
+                        </div>
+                    </nav>
+
+                    <!-- Main Content Area -->
+                    <main class="flex-1 min-h-0 flex flex-col relative bg-white w-full z-40 overflow-hidden">
+                        <div class="absolute inset-0 bg-pink-50/30 opacity-50 pointer-events-none z-0"></div>
+                        <div id="main-view-container" class="w-full flex-1 min-h-0 flex flex-col relative z-10 overflow-hidden">
+                            ${renderActiveView()}
+                        </div>
+                    </main>
+
+                    <!-- Bottom Configurable Navigation -->
+                    <nav class="bg-white border-t border-pink-100 flex justify-around items-stretch h-[calc(60px+env(safe-area-inset-bottom))] sm:h-[calc(70px+env(safe-area-inset-bottom))] pb-safe shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] z-30 w-full relative">
+                        ${renderBottomNav()}
+                    </nav>
+
+                    <!-- Modal Root -->
+                    <div id="modal-container">
+                        ${renderModal()}
+                        ${renderUserActivityModal()}
+                        ${renderConfirmDialogModal()}
+                    </div>
+                </div>
+            `;
+      }
+
+      // Initialize application
+      async function initApp() {
+        try {
+          // Fetch all data
+          const responses = await Promise.all([
+            supabaseClient.from("links").select("*"),
+            supabaseClient.from("users").select("*"),
+            supabaseClient
+              .from("history")
+              .select("*")
+              .order("timestamp", { ascending: false }),
+            supabaseClient.from("browsers").select("*"),
+            supabaseClient.from("attributes").select("*"),
+            supabaseClient.from("user_pinned_links").select("*"),
+          ]);
+
+          // Check for errors
+          const errors = responses
+            .filter((r) => r.error)
+            .map((r) => r.error.message);
+          if (errors.length > 0) {
+            alert(
+              "Supabase Error(s): \n" +
+                errors.join("\n") +
+                "\n\nPlease ensure your database tables are created correctly and Row Level Security (RLS) is configured (or disabled for testing). Check the console for more details.",
+            );
+            console.error("Supabase Errors:", errors);
+          }
+
+          const [
+            { data: links },
+            { data: users },
+            { data: history },
+            { data: browsers },
+            { data: attrs },
+            { data: pinned },
+          ] = responses;
+
+          if (attrs) {
+            const mappedAttrs = {
+              device: [],
+              country: [],
+              software: [],
+              update: [],
+            };
+            attrs.forEach((a) => {
+              if (mappedAttrs[a.type]) mappedAttrs[a.type].push(a.value);
+            });
+            state.attributes = mappedAttrs;
+          }
+
+          if (links) {
+            state.links = links.map((l) => ({
+              id: l.id,
+              title: l.title,
+              url: l.url,
+              device: l.device,
+              country: l.country,
+              software: l.software,
+              update: l.update_attr,
+              usageCount: l.usage_count,
+              isPinned: l.is_pinned,
+              createdAt: l.created_at,
+            }));
+          }
+
+          if (users) {
+            state.users = users.map((u) => {
+              const uPins = pinned
+                ? pinned
+                    .filter((p) => p.user_key === u.key)
+                    .map((p) => p.link_id)
+                : [];
+              return {
+                key: u.key,
+                name: u.name,
+                isUsed: u.is_used,
+                isBanned: u.is_banned,
+                createdAt: u.created_at,
+                pinned: uPins,
+                usage: {}, // Optional: Aggregate usage inside history if needed, but array starts empty
+              };
+            });
+
+            // Aggregate usage from history
+            if (history) {
+              history.forEach((h) => {
+                const u = state.users.find((u) => u.key === h.user_key);
+                if (u) {
+                  u.usage[h.link_id] = (u.usage[h.link_id] || 0) + 1;
+                }
+              });
+            }
+          }
+
+          if (browsers) {
+            state.browsers = [
+              ...DEFAULT_BROWSERS,
+              ...browsers.map((b) => ({
+                id: b.id,
+                name: b.name,
+                iconType: b.icon_type,
+                iconClass: b.icon_class,
+                package: b.package,
+              }))
+            ];
+          }
+
+          if (history) {
+            const now = Date.now();
+            const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+
+            const validHistory = [];
+            history.forEach((h) => {
+              const hTime = new Date(h.timestamp).getTime();
+              if (now - hTime > TWENTY_FOUR_HOURS) {
+                supabaseClient.from("history").delete().eq("id", h.id).then();
+              } else {
+                validHistory.push(h);
+              }
+            });
+
+            state.history = validHistory.map((h) => ({
+              id: h.id,
+              userKey: h.user_key,
+              linkId: h.link_id,
+              title: h.title,
+              url: h.url,
+              timestamp: h.timestamp,
+            }));
+          }
+        } catch (err) {
+          console.error("Error loading data from Supabase:", err);
+        } finally {
+          state.isLoading = false;
+          render();
+        }
+      }
+
+      initApp();
+      /* Set up Realtime */ supabaseClient
+        .channel("public-changes")
+        .on("postgres_changes", { event: "*", schema: "public" }, (payload) => {
+          initApp();
+        })
+        .subscribe();
+    </script>
+  </body>
+</html>
